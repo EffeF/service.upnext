@@ -2,13 +2,67 @@
 # GNU General Public License v2.0 (see COPYING or https://www.gnu.org/licenses/gpl-2.0.txt)
 """This is the actual Up Next API script"""
 
-from __future__ import absolute_import, division, unicode_literals
 from datetime import datetime, timedelta
 from math import ceil
 from xbmc import Monitor
 from xbmcgui import WindowXMLDialog
-from statichelper import from_unicode
-from utils import addon_path, get_setting_bool, localize, localize_time
+from popup import format_remaining, popup_art, ring_step, spoilers_allowed
+from utils import addon_path, get_setting_bool, jsonrpc, localize, localize_date, localize_time
+
+EPISODE_FIELDS = ['art', 'episode', 'firstaired', 'playcount', 'plot', 'rating', 'runtime', 'season',
+                  'showtitle', 'title', 'tvshowid']
+PREVIEW_CANDIDATES = 25  # random library episodes tried for one with the episode before it
+PREVIEW_PROGRESS = 96  # percent of the finishing episode shown as played
+PREVIEW_REMAINING = 84  # seconds of it shown as left
+
+
+def library_preview(candidates=PREVIEW_CANDIDATES):
+    """A next episode from the library with the one before it (finishing, next),
+    so the test window shows real pictures and text; None without one."""
+    result = jsonrpc(method='VideoLibrary.GetEpisodes', params={
+        'properties': EPISODE_FIELDS, 'sort': {'method': 'random'}, 'limits': {'start': 0, 'end': candidates},
+        'filter': {'field': 'episode', 'operator': 'greaterthan', 'value': '1'},
+    })
+    for upcoming in (result.get('result') or {}).get('episodes') or []:
+        before = jsonrpc(method='VideoLibrary.GetEpisodes', params={
+            'tvshowid': upcoming.get('tvshowid'), 'season': upcoming.get('season'),
+            'properties': ['art', 'episode', 'season', 'title'],
+            'filter': {'field': 'episode', 'operator': 'is', 'value': str(upcoming.get('episode', 0) - 1)},
+        })
+        finishing = ((before.get('result') or {}).get('episodes') or [None])[0]
+        if finishing:
+            return finishing, upcoming
+    return None
+
+
+def preview_properties(finishing, upcoming):
+    """The window's properties for a library preview: the next episode as
+    the real popup sets them (its plot and still hidden when Kodi hides them
+    for unwatched episodes), and preview_finishing_* for the episode playing,
+    which a skin can show where it would read the player (nothing plays)."""
+    show_plot, show_thumb = spoilers_allowed(upcoming)
+    art = popup_art(upcoming.get('art') or {}, show_thumb)
+    rating = upcoming.get('rating')
+    props = dict(art)
+    props.update({
+        'plot': upcoming.get('plot', '') if show_plot else '', 'tvshowtitle': upcoming.get('showtitle', ''),
+        'title': upcoming.get('title', ''), 'season': str(upcoming.get('season', '')),
+        'episode': str(upcoming.get('episode', '')),
+        'seasonepisode': '{}x{}.'.format(upcoming.get('season', ''), upcoming.get('episode', '')),
+        'year': localize_date(upcoming.get('firstaired', '')),
+        'rating': str(round(float(rating), 1)) if rating is not None else '',
+        'playcount': str(upcoming.get('playcount', 0)), 'runtime': str(upcoming.get('runtime', '')),
+    })
+    finishing_art = finishing.get('art') or {}
+    props.update({
+        'preview_finishing_art': finishing_art.get('thumb') or art['landscape'] or art['fanart'],
+        'preview_finishing_season': str(finishing.get('season', '')),
+        'preview_finishing_episode': str(finishing.get('episode', '')),
+        'preview_finishing_title': finishing.get('title', ''),
+        'preview_finishing_progress': str(PREVIEW_PROGRESS),
+        'preview_finishing_remaining': format_remaining(PREVIEW_REMAINING),
+    })
+    return props
 
 
 class TestPopup(WindowXMLDialog):
@@ -29,13 +83,14 @@ class TestPopup(WindowXMLDialog):
             self.getControl(3013).setLabel(localize(30034))  # Close
 
     def set_info(self):
-        self.setProperty('clearart', 'https://fanart.tv/fanart/tv/121361/clearart/game-of-thrones-4fa1349588447.png')
-        self.setProperty('clearlogo', 'https://fanart.tv/fanart/tv/121361/hdtvlogo/game-of-thrones-504c49ed16f70.png')
-        self.setProperty('fanart', 'https://fanart.tv/fanart/tv/121361/showbackground/game-of-thrones-4fd5fa8ed5e1b.jpg')
-        self.setProperty('landscape', 'https://fanart.tv/detailpreview/fanart/tv/121361/tvthumb/game-of-thrones-4f78ce73d617c.jpg')
-        self.setProperty('poster', 'https://fanart.tv/fanart/tv/121361/tvposter/game-of-thrones-521441fd9b45b.jpg')
-        self.setProperty('thumb', 'https://fanart.tv/fanart/tv/121361/showbackground/game-of-thrones-556979e5eda6b.jpg')
-
+        """An episode from the library and the one before it when there is
+        one; else Game of Thrones' text without pictures (fanart.tv no
+        longer serves the links this used)."""
+        sample = library_preview()
+        if sample:
+            for key, value in preview_properties(*sample).items():
+                self.setProperty(key, value)
+            return
         self.setProperty('episode', '4')
         self.setProperty('playcount', '1')
         self.setProperty('plot', 'Lord Baelish arrives at Renly\'s camp just before he faces off against Stannis. '
@@ -61,8 +116,13 @@ class TestPopup(WindowXMLDialog):
             return
         self.current_progress_percent -= 100 * wait / timeout
         self.progress_control.setPercent(self.current_progress_percent)  # pylint: disable=no-member,useless-suppression
-        self.setProperty('remaining', from_unicode('%02d' % ceil((timeout / 1000) * (self.current_progress_percent / 100))))
-        self.setProperty('endtime', from_unicode(localize_time(datetime.now() + timedelta(seconds=50 * 60))))
+        self.set_remaining(ceil((timeout / 1000) * (self.current_progress_percent / 100)), timeout / 1000)
+        self.setProperty('endtime', localize_time(datetime.now() + timedelta(seconds=50 * 60)))
+
+    def set_remaining(self, remaining, duration):
+        self.setProperty('remaining', '%02d' % remaining)
+        self.setProperty('remaining_time', format_remaining(remaining))
+        self.setProperty('remaining_icon', '%02d' % ring_step(remaining, duration))
 
     def onFocus(self, controlId):  # pylint: disable=invalid-name
         pass
@@ -85,11 +145,12 @@ class TestPopup(WindowXMLDialog):
 
 def test_popup(window):
     popup = TestPopup(window, addon_path(), 'default', '1080i')
-    popup.show()
     step = 0
     wait = 100
     wait_s = wait / 1000
     timeout = 10000
+    popup.set_remaining(timeout / 1000, timeout / 1000)
+    popup.show()
     monitor = Monitor()
     while popup and step < timeout and not monitor.abortRequested():
         if popup.pause:
@@ -99,6 +160,14 @@ def test_popup(window):
         step += wait
 
 
+def test_skip_button():
+    from skip import LABELS, make_button
+    button = make_button(localize(LABELS['intro']), on_skip=lambda: None)
+    button.show()
+    Monitor().waitForAbort(10)
+    button.close()
+
+
 def open_settings():
     from xbmcaddon import Addon
     Addon().openSettings()
@@ -106,7 +175,9 @@ def open_settings():
 
 def run(argv):
     """Route to API method"""
-    if len(argv) == 3 and argv[1] == 'test_window':
+    if len(argv) == 3 and argv[1] == 'test_window' and argv[2] == 'script-upnext-skip.xml':
+        test_skip_button()
+    elif len(argv) == 3 and argv[1] == 'test_window':
         test_popup(argv[2])
     else:
         open_settings()

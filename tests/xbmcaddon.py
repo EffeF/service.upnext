@@ -5,7 +5,6 @@
 
 # pylint: disable=invalid-name
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 from xbmc import getLocalizedString
 from xbmcextra import ADDON_INFO, ADDON_ID, addon_settings, global_settings, import_language
 
@@ -44,7 +43,7 @@ class Addon:
     def setSetting(self, key, value):
         ''' A stub implementation for the xbmcaddon Addon class setSetting() method '''
         if not ADDON_SETTINGS.get(self.id):
-            ADDON_SETTINGS[self.id] = dict()
+            ADDON_SETTINGS[self.id] = {}
         ADDON_SETTINGS[self.id][key] = value
         # NOTE: Disable actual writing as it is no longer needed for testing
         # with open('tests/userdata/addon_settings.json', 'w') as fd:

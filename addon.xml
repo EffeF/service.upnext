@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="service.upnext" name="Up Next" version="1.1.5" provider-name="im85288">
+<addon id="service.upnext" name="Up Next" version="1.3.7" provider-name="im85288">
     <requires>
-        <import addon="xbmc.python" version="2.25.0"/>
+        <import addon="xbmc.python" version="3.0.0"/>
     </requires>
     <!-- This is needed to get an addon icon -->
     <extension point="xbmc.python.script" library="resources/lib/script_entry.py">
@@ -10,9 +10,17 @@
     <extension point="xbmc.service" library="resources/lib/service_entry.py"/>
     <extension point="xbmc.addon.metadata">
         <summary lang="en_GB">Propose to play the next episode automatically</summary>
-        <description lang="en_GB">A service add-on that shows a Netflix-style notification for watching the next episode. After a few automatic iterations it asks the user if he is still there watching.
+        <description lang="en_GB">A service add-on that shows a Netflix-style notification for watching the next episode. After a few automatic iterations it asks the user if they are still watching.
 
 A lot of existing add-ons already integrate with this service out-of-the-box.</description>
+        <summary lang="cs_CZ">Nabízí automatické přehrání další epizody</summary>
+        <description lang="cs_CZ">Doplněk zobrazí nabídku pro přehrání další epizody. Po několika automaticky přehrávaných dílech se může zeptat, zda stále sledujete.
+
+Mnoho doplňků už spolupráci s Up Next podporuje.</description>
+        <summary lang="zh_CN">建议自动播放下一集</summary>
+        <description lang="zh_CN">一个服务插件，以 Netflix 风格的通知提醒观看下一集。连续自动播放数集后，它会询问用户是否还在观看。
+
+许多现有插件已经开箱即用地集成了该服务。</description>
         <summary lang="de_DE">Bietet Ihnen an, die nächste Episode automatisch wiederzugeben</summary>
         <description lang="de_DE">Ein kleines Hilfs-Add-on, welches eine Netflix-artige Benachrichtigung zur Wiedergabe der nächsten Episode anzeigt. Nach ein paar automatischen Iterationen fragt es den Anwender, ob er sie immer noch anschaut.
 
@@ -36,48 +44,43 @@ Många befintliga tillägg integreras redan med den här utanför lådan-tjänst
         <summary lang="es_ES">Sugiere reproducir el próximo episodio automáticamente</summary>
         <description lang="es_ES">Un complemento de servicio que muestra una notificación al estilo Netflix para ver el próximo episodio. Después de algunas iteraciones automáticas, le pregunta al usuario si todavía está allí mirando.
 
-            Muchos complementos existentes ya se integran con este servicio listo para usar.</description>
+Muchos complementos existentes ya se integran con este servicio listo para usar.</description>
         <platform>all</platform>
         <license>GPL-2.0-only</license>
         <news>
-v1.1.5 (2021-02-21)
-- Fix playlists to work with non-library content
-- Fix to prevent unwanted playback when using playlist queueing method
-- New translation for Finnish
+v1.3.7 (2026-11-10)
+- Fix the service failing to start on Xbox
+- Update Simplified Chinese translation
 
-v1.1.4 (2020-12-03)
-- Fix problem causing pop-up to not appear
-- Translation updates to Romanian, Russian and Spanish
+v1.3.6 (2026-11-04)
+- Optional arrow-key seeking while the popup is open
+- Optional pause while an add-on starts the next episode
+- Bring back a popup hidden while the device was asleep
+- Update Czech and Polish translations
 
-v1.1.3 (2020-10-14)
-- Enable customPlayTime by default
-- Do not seek to the end before playing next episode
-- Add Kodi v17 compatibility
-- Fix logging on Kodi v19 (Matrix) after recent breakage
-- Enqueue the next episode in the playlist
-- Translation updates to German
+v1.3.5 (2026-11-03)
+- Continue a partly watched next episode where it was left
+- Countdown in minutes when the popup opens more than a minute early
+- Follow Kodi's spoiler setting for unwatched episodes in the popup
+- Fall back to season or add-on art when the show lacks an image
 
-v1.1.2 (2020-06-22)
-- Bug fix for change from sleep to waitForAbort using seconds and not ms
-- Translation updates to Japanese and Korean
+v1.3.4 (2026-11-03)
+- Update Simplified Chinese translation
 
-v1.1.1 (2020-06-21)
-- Avoid conflict with external players
-- Restore "Ignore Playlist" option
-- Fix a known Kodi bug related to displaying hours
-- Improvements to endtime visualization
-- New translations for Hindi and Romanian
-- Translation updates to Hungarian and Spanish
+v1.3.3 (2026-11-02)
+- Mark episodes watched when moving on early with Watch Now
+- Popup for non-library videos in playlists (with Enable on playlists)
+- Notification time can be set up to 300 seconds before the end
+- Lighter settings reads during playback
+- Update Polish translation
 
-v1.1.0 (2020-01-17)
-- Add notification_offset for Netflix add-on
-- Fix various runtime exceptions
-- Implement new settings
-- Implement new developer mode
-- Show current time and next endtime in notification
-- New translations for Brazilian, Czech, Greek, Japanese, Korean
-- New translations for Russian, Slovak, Spanish, Swedish
-- Translation updates to Croatian, French, German, Hungarian, Italian, Polish
+v1.3.2 (2026-11-01)
+- Optional Still Watching prompts based on viewing time or bedtime
+
+v1.3.1 (2026-11-01)
+- Fix the popup not appearing when an add-on starts the next episode itself
+- Optional OK/Select access to playback controls while the popup is open
+- Update Simplified Chinese translation
         </news>
         <assets>
             <icon>resources/media/icon.png</icon>

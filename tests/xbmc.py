@@ -5,13 +5,15 @@
 
 # pylint: disable=invalid-name,no-self-use
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import json
+import sys
+import threading
 import time
-from xbmcextra import global_settings, import_language
-from statichelper import to_unicode
+from weakref import WeakValueDictionary
+
+from xbmcextra import __KODI_NEXUS__, global_settings, import_language
 
 LOGFATAL = 'Fatal'
 LOGERROR = 'Error'
@@ -58,22 +60,59 @@ class Keyboard:
 class Monitor:
     ''' A stub implementation of the xbmc Monitor class '''
 
-    def __init__(self, line='', heading=''):
+    __slots__ = ('__weakref__', )
+
+    _instances = WeakValueDictionary()
+    _aborted = threading.Event()
+
+    def __new__(cls):
         ''' A stub constructor for the xbmc Monitor class '''
+
+        self = super().__new__(cls)
+
+        if not cls._instances:
+            abort_timer = threading.Thread(target=self._timer)  # pylint: disable=protected-access
+            abort_timer.daemon = True
+            abort_timer.start()
+
+        key = id(self)
+        cls._instances[key] = self
+        return self
+
+    def __del__(self):
+        key = id(self)
+        if key in Monitor._instances:
+            del Monitor._instances[key]
+
+    def _timer(self):
+        abort_time = 120 if __KODI_NEXUS__ else 90
+        log('Test exit in {0}s'.format(abort_time), LOGINFO)
+
+        Monitor._aborted.wait(abort_time)
+        Monitor._aborted.set()
+        try:
+            sys.exit()
+        except SystemExit:
+            pass
 
     def abortRequested(self):
         ''' A stub implementation for the xbmc Monitor class abortRequested() method '''
-        return False
+        return Monitor._aborted.is_set()
 
     def waitForAbort(self, timeout=None):
         ''' A stub implementation for the xbmc Monitor class waitForAbort() method '''
         try:
-            time.sleep(timeout * 1000)
+            Monitor._aborted.wait(timeout)
         except KeyboardInterrupt:
-            return True
-        except Exception:  # pylint: disable=broad-except
-            return True
-        return False
+            Monitor._aborted.set()
+            try:
+                sys.exit()
+            except SystemExit:
+                pass
+        except SystemExit:
+            Monitor._aborted.set()
+
+        return Monitor._aborted.is_set()
 
 
 class Player:
@@ -102,6 +141,13 @@ class Player:
     def getPlayingFile(self):
         ''' A stub implementation for the xbmc Player class getPlayingFile() method '''
         return '/foo/bar'
+
+    def isPlayingVideo(self):
+        ''' A stub implementation for the xbmc Player class isPlayingVideo() method '''
+        return True
+
+    def pause(self):
+        ''' A stub implementation for the xbmc Player class pause() method '''
 
     def isPlaying(self):
         ''' A stub implementation for the xbmc Player class isPlaying() method '''
@@ -224,15 +270,15 @@ def getRegion(key):
 def log(msg, level):
     ''' A reimplementation of the xbmc log() function '''
     if level in ('Error', 'Fatal'):
-        print('\033[31;1m%s: \033[32;0m%s\033[39;0m' % (level, to_unicode(msg)))
+        print('\033[31;1m%s: \033[32;0m%s\033[39;0m' % (level, msg))
         if level == 'Fatal':
             raise Exception(msg)
     elif level in ('Warning', 'Notice'):
-        print('\033[33;1m%s: \033[32;0m%s\033[39;0m' % (level, to_unicode(msg)))
+        print('\033[33;1m%s: \033[32;0m%s\033[39;0m' % (level, msg))
     elif level == 'Debug':
-        print('\033[32;1m%s: \033[30;1m%s\033[39;0m' % (level, to_unicode(msg)))
+        print('\033[32;1m%s: \033[30;1m%s\033[39;0m' % (level, msg))
     else:
-        print('\033[32;1m%s: \033[32;0m%s\033[39;0m' % (level, to_unicode(msg)))
+        print('\033[32;1m%s: \033[32;0m%s\033[39;0m' % (level, msg))
 
 
 def setContent(self, content):  # pylint: disable=unused-argument

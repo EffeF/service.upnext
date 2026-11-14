@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: service.upnext\n"
 "Report-Msgid-Bugs-To: https://github.com/im85288/service.upnext\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2018-02-26 13:31+0000\n"
+"PO-Revision-Date: 2023-02-19 00:00+0000\n"
 "Last-Translator: Sopor\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr "Titta nu"
 
 msgctxt "#30008"
 msgid "Up Next"
-msgstr "Strax"
+msgstr "Up Next"
 
 msgctxt "#30009"
 msgid "Ends at: $INFO[Window.Property(endtime)]"
@@ -52,7 +52,7 @@ msgstr "Stäng"
 
 msgctxt "#30035"
 msgid "Continue watching in [COLOR FFFF4081]$INFO[Window.Property(remaining)][/COLOR] seconds"
-msgstr "Fortsätt titta i [COLOR FFFF4081]$INFO[Window.Property(remaining)][/COLOR] sekunder"
+msgstr "Fortsätt titta om [COLOR FFFF4081]$INFO[Window.Property(remaining)][/COLOR] sekunder"
 
 msgctxt "#30036"
 msgid "Up next in [COLOR FFFF4081]$INFO[Window.Property(remaining)][/COLOR] seconds"
@@ -94,6 +94,22 @@ msgctxt "#30049"
 msgid "Next Episode"
 msgstr "Nästa avsnitt"
 
+msgctxt "#30050"
+msgid "Next episode in $INFO[Window.Property(credits_remaining)] s"
+msgstr ""
+
+msgctxt "#30051"
+msgid "Back: keep watching"
+msgstr ""
+
+msgctxt "#30052"
+msgid "Skip intro"
+msgstr ""
+
+msgctxt "#30053"
+msgid "Skip recap"
+msgstr ""
+
 msgctxt "#30060"
 msgid "[B]UP NEXT DEMO MODE ENABLED[/B]"
 msgstr "[B]UP NEXT DEMOLÄGE AKTIVERAT[/B]"
@@ -118,7 +134,11 @@ msgstr "Ställ in visningsläget för aviseringarna"
 
 msgctxt "#30505"
 msgid "Show a \"Stop\" button instead of a \"Close\" button"
-msgstr "Visa en \"stoppknapp\" i stället för en \"stängknapp\""
+msgstr "Visa en \"Stoppknapp\" i stället för en \"Stängknapp\""
+
+msgctxt "#30507"
+msgid "Use OK/Select for playback controls"
+msgstr ""
 
 msgctxt "#30600"
 msgid "Behaviour"
@@ -138,7 +158,7 @@ msgstr "Inkludera redan visade avsnitt"
 
 msgctxt "#30607"
 msgid "Number of episodes before \"Still there?\" query"
-msgstr "Antal avsnitt innan frågan \"tittar du fortfarande?\""
+msgstr "Antal avsnitt innan frågan \"Tittar du fortfarande?\""
 
 msgctxt "#30609"
 msgid "Duration in seconds for notification to be shown"
@@ -150,7 +170,7 @@ msgstr "Anpassa den automatiska uppspelningslängden efter avsnittets längd"
 
 msgctxt "#30613"
 msgid "All episodes  [COLOR gray]any length[/COLOR]"
-msgstr "Alla avsnitt  [COLOR gray]any length[/COLOR]"
+msgstr "Alla avsnitt  [COLOR gray]oavsett längd[/COLOR]"
 
 msgctxt "#30615"
 msgid "Very short episodes  [COLOR gray]< 10 mins[/COLOR]"
@@ -158,7 +178,7 @@ msgstr "Väldigt korta avsnitt  [COLOR gray]< 10 min[/COLOR]"
 
 msgctxt "#30617"
 msgid "Short episodes  [COLOR gray]> 10 mins[/COLOR]"
-msgstr "Korta avsnitt  [COLOR gray]> 10 mins[/COLOR]"
+msgstr "Korta avsnitt  [COLOR gray]> 10 min[/COLOR]"
 
 msgctxt "#30619"
 msgid "Medium episodes  [COLOR gray]> 20 mins[/COLOR]"
@@ -166,11 +186,31 @@ msgstr "Medellånga avsnitt  [COLOR gray]> 20 min[/COLOR]"
 
 msgctxt "#30621"
 msgid "Long episodes  [COLOR gray]> 40 mins[/COLOR]"
-msgstr "Långa avsnitt  [COLOR gray]> 40 mins[/COLOR]"
+msgstr "Långa avsnitt  [COLOR gray]> 40 min[/COLOR]"
 
 msgctxt "#30623"
 msgid "Very long episodes  [COLOR gray]> 60 mins[/COLOR]"
 msgstr "Väldigt långa avsnitt  [COLOR gray]> 60 min[/COLOR]"
+
+msgctxt "#30625"
+msgid "Advance during credits after (seconds, 0 disables)"
+msgstr ""
+
+msgctxt "#30627"
+msgid "Intros and recaps"
+msgstr ""
+
+msgctxt "#30629"
+msgid "Show a Skip button when the add-on marks them"
+msgstr ""
+
+msgctxt "#30631"
+msgid "Skip intros automatically"
+msgstr ""
+
+msgctxt "#30633"
+msgid "Skip recaps automatically"
+msgstr ""
 
 msgctxt "#30700"
 msgid "Expert"
@@ -198,16 +238,20 @@ msgstr "Aktivera DEMO-läge"
 
 msgctxt "#30805"
 msgid "Show an UpNext pop-up…"
-msgstr "Visa en popup för UpNext…"
+msgstr "Visa en UpNext-popup…"
 
 msgctxt "#30807"
 msgid "Show an UpNextSimple pop-up…"
-msgstr "Visa en enkel popup för UpNext…"
+msgstr "Visa en enkel UpNext-popup…"
 
 msgctxt "#30809"
 msgid "Show a StillWatching pop-up…"
-msgstr "Visa en popup för \"tittar du fortfarande\"…"
+msgstr "Visa en popup för \"Tittar du fortfarande\"…"
 
 msgctxt "#30811"
 msgid "Show a StillWatchingSimple pop-up…"
-msgstr "Visa en enkel popup för \"tittar du fortfarande\"…"
+msgstr "Visa en enkel popup för \"Tittar du fortfarande\"…"
+
+msgctxt "#30813"
+msgid "Test Skip button"
+msgstr ""

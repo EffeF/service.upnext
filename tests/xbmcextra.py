@@ -5,10 +5,17 @@
 
 # pylint: disable=invalid-name
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 import os
+import sys
 import xml.etree.ElementTree as ET
+
 import polib
+
+
+_version_info = sys.version_info
+__KODI_NEXUS__ = _version_info.minor > 10
 
 
 def kodi_to_ansi(string):
@@ -74,7 +81,7 @@ def global_settings():
     ''' Use the global_settings file '''
     import json
     try:
-        with open('tests/userdata/global_settings.json') as f:
+        with io.open('tests/userdata/global_settings.json', mode='r', encoding='utf-8') as f:
             settings = json.load(f)
     except OSError as e:
         print("Error: Cannot use 'tests/userdata/global_settings.json' : %s" % e)
@@ -104,7 +111,7 @@ def addon_settings():
     ''' Use the addon_settings file '''
     import json
     try:
-        with open('tests/userdata/addon_settings.json') as f:
+        with io.open('tests/userdata/addon_settings.json', mode='r', encoding='utf-8') as f:
             settings = json.load(f)
     except OSError as e:
         print("Error: Cannot use 'tests/userdata/addon_settings.json' : %s" % e)
